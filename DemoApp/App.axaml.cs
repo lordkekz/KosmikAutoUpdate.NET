@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using KosmikAutoUpdate.NET;
 
 namespace DemoApp;
 
@@ -15,5 +16,7 @@ public partial class App : Application {
         }
 
         base.OnFrameworkInitializationCompleted();
+
+        Updater.Create();
     }
 }
