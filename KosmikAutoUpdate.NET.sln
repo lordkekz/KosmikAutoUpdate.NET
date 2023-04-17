@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KosmikAutoUpdate.NET Helper", "KosmikAutoUpdate.NET Helper\KosmikAutoUpdate.NET Helper.csproj", "{C3C50BF5-2599-44F9-858F-60D911B02D03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KosmikAutoUpdate.NET", "KosmikAutoUpdate.NET\KosmikAutoUpdate.NET.csproj", "{633E50A5-BC41-45F5-B0CA-189DFAE74A08}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoApp", "DemoApp\DemoApp.csproj", "{337BE521-5BF6-40A8-9746-0A98F5BA891F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C3C50BF5-2599-44F9-858F-60D911B02D03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3C50BF5-2599-44F9-858F-60D911B02D03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3C50BF5-2599-44F9-858F-60D911B02D03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3C50BF5-2599-44F9-858F-60D911B02D03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{633E50A5-BC41-45F5-B0CA-189DFAE74A08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{633E50A5-BC41-45F5-B0CA-189DFAE74A08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{633E50A5-BC41-45F5-B0CA-189DFAE74A08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{633E50A5-BC41-45F5-B0CA-189DFAE74A08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{337BE521-5BF6-40A8-9746-0A98F5BA891F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{337BE521-5BF6-40A8-9746-0A98F5BA891F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{337BE521-5BF6-40A8-9746-0A98F5BA891F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{337BE521-5BF6-40A8-9746-0A98F5BA891F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
