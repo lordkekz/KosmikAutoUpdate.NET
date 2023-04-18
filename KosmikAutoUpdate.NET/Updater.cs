@@ -2,32 +2,77 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using KosmikAutoUpdate.NET.StorageModels;
 
 namespace KosmikAutoUpdate.NET;
 
 public class Updater {
     public string API_Address { get; private set; }
     public GitSemanticVersion CurrentVersion { get; private set; }
-    internal Manifest? LocalManifest { get; private set; }
-    public string? Branch { get; private set; }
+
+    // Lazily generate local manifest
+    internal LocalManifest LocalManifest {
+        get {
+            if (_localManifest is null) GenerateManifest();
+            return _localManifest!;
+        }
+        private set => _localManifest = value;
+    }
+    private LocalManifest? _localManifest;
+
+    public string? Channel { get; private set; }
     public string AppPath { get; private set; }
     private ApiClient _client;
+    private Downloader _downloader;
 
-    public Updater() {
+    private Updater() {
         _client = new ApiClient("http://localhost:8080/");
+        _downloader = new Downloader();
     }
 
     public async void Update() {
-        var channels = await _client.GetChannels();
-        foreach(var (k, v) in channels)
-            Debug.WriteLine($"channels[{k}]={v}");
-        var version = await _client.GetVersion("main");
-        Debug.WriteLine(version.Date);
+        var version = await _client.GetVersion(Channel ?? "main");
+        Debug.Assert(version is not null);
+
+        var filesToUpdate = FindUpdatedFiles(version).ToList();
+        Debug.WriteLine($"Need to download {
+            filesToUpdate.Count
+        } files with total download size {
+            filesToUpdate.Sum(f => f.CompressedBytes) / 1000000.0
+        }MB");
+
+        var filesToRemove = FindRemovedFiles(version).ToList();
+        Debug.WriteLine($"Need to delete {
+            filesToRemove.Count
+        } files with total local size {
+            filesToRemove.Sum(f => f.SizeBytes) / 1000000.0
+        }MB");
     }
 
-    private void GenerateManifest() {
-        LocalManifest = Manifest.GenerateFromLocalFiles(CurrentVersion, AppPath);
-    }
+    /// <summary>
+    /// Finds files which are added or changed in <c>target</c> compared to <c>LocalManifest</c>.
+    /// </summary>
+    /// <param name="target">the <c>RemoteManifest</c> of the target App version</param>
+    /// <returns>a filtered sequence of <c>RemoteAppFile</c>s</returns>
+    private IEnumerable<RemoteAppFile> FindUpdatedFiles(RemoteManifest target) =>
+        from remoteFile in target.Files.Values
+        let needsUpdate = !LocalManifest.Files.ContainsKey(remoteFile.RelativePath) ||
+                          LocalManifest.Files[remoteFile.RelativePath].FileHash != remoteFile.FileHash
+        where needsUpdate
+        select remoteFile;
+
+    /// <summary>
+    /// Finds files which are removed in <c>target</c> compared to <c>LocalManifest</c>.
+    /// </summary>
+    /// <param name="target">the <c>RemoteManifest</c> of the target App version</param>
+    /// <returns>a filtered sequence of local <c>LocalAppFile</c>s</returns>
+    private IEnumerable<LocalAppFile> FindRemovedFiles(RemoteManifest target) =>
+        from localFile in LocalManifest.Files.Values
+        let wasRemoved = !target.Files.ContainsKey(localFile.RelativePath)
+        where wasRemoved
+        select localFile;
+
+    private void GenerateManifest() { LocalManifest = LocalManifest.GenerateFromLocalFiles(CurrentVersion, AppPath); }
 
     public static Updater? Create() {
         var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -51,13 +96,13 @@ public class Updater {
         }
         catch (IOException) { }
 
-        string? currentBranch = null;
+        string? currentChannel = null;
         if (root.ContainsKey("channel"))
-            currentBranch = root["channel"]!.GetValue<string>();
+            currentChannel = root["channel"]!.GetValue<string>();
 
         return new Updater {
             AppPath = path,
-            Branch = currentBranch,
+            Channel = currentChannel,
             CurrentVersion = currentVersion
         };
     }

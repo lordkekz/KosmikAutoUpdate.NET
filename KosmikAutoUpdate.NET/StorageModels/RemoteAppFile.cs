@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace KosmikAutoUpdate.NET;
+namespace KosmikAutoUpdate.NET.StorageModels;
 
 internal class RemoteAppFile : IAppFile {
     public RemoteAppFile(string fileHash, long compressedBytes, string fileUrl, string relativePath = null) {
