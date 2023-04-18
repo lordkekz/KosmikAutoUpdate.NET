@@ -1,3 +1,5 @@
+using System.Threading;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -17,6 +19,7 @@ public partial class App : Application {
 
         base.OnFrameworkInitializationCompleted();
 
-        Updater.Create();
+        var u = Updater.Create();
+        Task.Run(() => u?.Update());
     }
 }

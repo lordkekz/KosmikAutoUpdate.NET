@@ -8,9 +8,22 @@ namespace KosmikAutoUpdate.NET;
 public class Updater {
     public string API_Address { get; private set; }
     public GitSemanticVersion CurrentVersion { get; private set; }
-    public Manifest? LocalManifest { get; private set; }
+    internal Manifest? LocalManifest { get; private set; }
     public string? Branch { get; private set; }
     public string AppPath { get; private set; }
+    private ApiClient _client;
+
+    public Updater() {
+        _client = new ApiClient("http://localhost:8080/");
+    }
+
+    public async void Update() {
+        var channels = await _client.GetChannels();
+        foreach(var (k, v) in channels)
+            Debug.WriteLine($"channels[{k}]={v}");
+        var version = await _client.GetVersion("main");
+        Debug.WriteLine(version.Date);
+    }
 
     private void GenerateManifest() {
         LocalManifest = Manifest.GenerateFromLocalFiles(CurrentVersion, AppPath);

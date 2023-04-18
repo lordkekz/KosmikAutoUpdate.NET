@@ -1,6 +1,12 @@
+using System.Diagnostics;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 namespace KosmikAutoUpdate.NET;
 
+[JsonConverter(typeof(GitSemanticVersionJsonConverter))]
 public record GitSemanticVersion(int Major, int Minor, int Patch, int Commits) : IComparable {
+    
     public GitSemanticVersion(string str) : this(0, 0, 0, 0) {
         try {
             var a = str.Split("+");
@@ -45,5 +51,19 @@ public record GitSemanticVersion(int Major, int Minor, int Patch, int Commits) :
     public static IComparer<GitSemanticVersion> GitSemanticVersionComparer { get; } =
         new GitSemanticVersionRelationalComparer();
     
+    #endregion
+
+    #region JSON Converter between GitSemanticVersion and JSON string
+    
+    private class GitSemanticVersionJsonConverter : JsonConverter<GitSemanticVersion> {
+        public override GitSemanticVersion? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+            return new GitSemanticVersion(reader.GetString());
+        }
+
+        public override void Write(Utf8JsonWriter writer, GitSemanticVersion value, JsonSerializerOptions options) {
+            writer.WriteStringValue(value.ToString());
+        }
+    }
+
     #endregion
 }
