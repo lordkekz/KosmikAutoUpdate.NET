@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KosmikAutoUpdate.NET Helper", "KosmikAutoUpdate.NET Helper\KosmikAutoUpdate.NET Helper.csproj", "{C3C50BF5-2599-44F9-858F-60D911B02D03}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KosmikAutoUpdate.NET.Patcher", "KosmikAutoUpdate.NET.Patcher\KosmikAutoUpdate.NET.Patcher.csproj", "{C3C50BF5-2599-44F9-858F-60D911B02D03}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KosmikAutoUpdate.NET", "KosmikAutoUpdate.NET\KosmikAutoUpdate.NET.csproj", "{633E50A5-BC41-45F5-B0CA-189DFAE74A08}"
 EndProject
