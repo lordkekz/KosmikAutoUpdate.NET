@@ -1,3 +1,6 @@
+using System.Security.Cryptography;
+using System.Text;
+
 namespace KosmikAutoUpdate.NET;
 
 public static class Helper {
@@ -6,10 +9,15 @@ public static class Helper {
      */
     public static string ComputeFileSha256(string path) {
         using var stream = File.OpenRead(path);
-        using var md5 = System.Security.Cryptography.SHA256.Create();
+        var hashBytes = SHA256.HashData(stream);
+        return Convert.ToHexString(hashBytes).ToLowerInvariant();
+    }
 
-        var hashBytes = md5.ComputeHash(stream);
-
-        return Convert.ToHexString(hashBytes);
+    /**
+     * Computes the SHA256 Hash of a string in UTF8 encoding..
+     */
+    public static string ComputeSha256(string str) {
+        var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(str));
+        return Convert.ToHexString(hashBytes).ToLowerInvariant();
     }
 }

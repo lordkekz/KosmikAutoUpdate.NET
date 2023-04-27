@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace KosmikAutoUpdate.NET.StorageModels;
 
 internal class RemoteAppFile : IAppFile {
-    public RemoteAppFile(string fileHash, long compressedBytes, string fileUrl, string relativePath = null) {
+    public RemoteAppFile(string fileHash, long compressedBytes, Uri fileUrl, string relativePath = null) {
         RelativePath = relativePath;
         FileHash = fileHash;
         CompressedBytes = compressedBytes;
@@ -20,5 +20,5 @@ internal class RemoteAppFile : IAppFile {
     public long CompressedBytes { get; }
 
     [property: JsonPropertyName("file_url")]
-    public string FileUrl { get; }
+    public Uri FileUrl { get; }
 }
