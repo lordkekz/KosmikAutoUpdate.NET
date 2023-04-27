@@ -64,6 +64,6 @@ internal class Downloader : IDisposable {
     }
 
     private bool VerifyFileHash(RemoteAppFile file, string tempFileExtractedPath) =>
-        file.FileHash.Equals(Helper.ComputeFileSha256(tempFileExtractedPath),
+        file.FileHash.Equals(Utility.ComputeFileSha256(tempFileExtractedPath),
             StringComparison.InvariantCultureIgnoreCase);
 }

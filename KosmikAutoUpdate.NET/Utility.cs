@@ -3,7 +3,7 @@ using System.Text;
 
 namespace KosmikAutoUpdate.NET;
 
-public static class Helper {
+public static class Utility {
     /**
      * Computes the SHA256 Hash of a file's content.
      */

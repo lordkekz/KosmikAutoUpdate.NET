@@ -21,7 +21,7 @@ internal class LocalManifest {
 
     internal void PopulateFromLocalFiles(string path) {
         foreach (var file in Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories)) {
-            var hash = Helper.ComputeFileSha256(file);
+            var hash = Utility.ComputeFileSha256(file);
             var relPath = Path.GetRelativePath(path, file);
             var fileInfo = new FileInfo(file);
             Files[relPath] = new LocalAppFile(relPath, hash, fileInfo.Length);

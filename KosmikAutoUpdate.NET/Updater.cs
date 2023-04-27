@@ -53,7 +53,7 @@ public class Updater {
             filesToRemove.Sum(f => f.SizeBytes) / 1000000
         }MB");
 
-        _downloader.DownloadAll(filesToUpdate);
+        var downloaded = _downloader.DownloadAll(filesToUpdate);
     }
 
     /// <summary>
