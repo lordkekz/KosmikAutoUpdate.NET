@@ -4,6 +4,6 @@ namespace KosmikAutoUpdate.NET.StorageModels;
 
 public record PatchAppFile(
     [property: JsonPropertyName("relative_path")]
-    Uri RelativePath,
+    string RelativePath,
     [property: JsonPropertyName("temp_path")]
     Uri TempPath) { }
