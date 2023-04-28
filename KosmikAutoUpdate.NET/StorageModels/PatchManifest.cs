@@ -5,11 +5,12 @@ namespace KosmikAutoUpdate.NET.StorageModels;
 
 public class PatchManifest {
     [JsonConstructor]
-    public PatchManifest(Uri appPath, Uri tempDir, List<PatchAppFile> updatedFiles, List<string> removedFiles) {
+    public PatchManifest(Uri appPath, Uri tempDir, List<PatchAppFile> updatedFiles, List<string> removedFiles, string callbackPath) {
         AppPath = appPath;
         TempDir = tempDir;
         UpdatedFiles = updatedFiles;
         RemovedFiles = removedFiles;
+        CallbackPath = callbackPath;
     }
 
     [property: JsonPropertyName("app_path")]
@@ -23,4 +24,7 @@ public class PatchManifest {
 
     [property: JsonPropertyName("removed_files")]
     public List<string> RemovedFiles { get; private set; }
+
+    [property: JsonPropertyName("callback_path")]
+    public string CallbackPath { get; private set; }
 }

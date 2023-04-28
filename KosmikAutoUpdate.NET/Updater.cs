@@ -14,20 +14,33 @@ public class Updater {
 
     internal LocalManifest LocalManifest { get; private init; }
 
-    private ApiClient _client;
-    private Downloader _downloader;
+    private readonly ApiClient _client;
+    private readonly Downloader _downloader;
+    private readonly PatcherStarter _patcherStarter;
 
     private Updater() {
         _client = new ApiClient("http://localhost:8080/");
         _downloader = new Downloader();
+        _patcherStarter =
+            new PatcherStarter(
+                "../../../../KosmikAutoUpdate.NET.Patcher/bin/Debug/net7.0/KosmikAutoUpdate.NET.Patcher.exe");
     }
 
-    public async void Update() {
+    /// <summary>
+    /// Main method for updating app.
+    /// </summary>
+    /// <returns><c>true</c> if the app needs to restart to apply an update; <c>false</c> otherwise</returns>
+    public async Task<bool> Update() {
+        // TODO remove temp dir after an update
+        
+        // Get latest version
         var version = await _client.GetVersion(Channel ?? "main");
         Debug.Assert(version is not null);
 
+        // Hash local files
         PopulateManifest();
 
+        // Update decision and analysis logic (stub)
         var updateAvailable = CurrentVersion.CompareTo(version.Version) < 0;
 
         Debug.WriteLine($"Current version is {
@@ -37,7 +50,7 @@ public class Updater {
         }; Update available? {
             updateAvailable
         }");
-        if (!updateAvailable) return;
+        if (!updateAvailable) return false;
 
         var filesToUpdate = FindUpdatedFiles(version).ToList();
         Debug.WriteLine($"Need to download {
@@ -53,7 +66,27 @@ public class Updater {
             filesToRemove.Sum(f => f.SizeBytes) / 1000000
         }MB");
 
+        // Download needed files
         var downloaded = _downloader.DownloadAll(filesToUpdate);
+
+        // Create PatchManifest for Patcher
+        var updated = filesToUpdate.Select(file =>
+            new PatchAppFile(file.RelativePath, new Uri(downloaded[file.FileHash.ToLowerInvariant()])));
+        var removed = filesToRemove.Select(file => file.RelativePath);
+        // TODO More reliably guess the callbackPath and provide Option to customize it
+        // Maybe we can figure out the commandline of our process using the pid?
+        var callbackPath = Assembly.GetEntryAssembly().Location.Replace(".dll", ".exe");
+        var patchManifest = new PatchManifest(new Uri(AppPath), new Uri(_downloader.TempDirPath),
+            updated.ToList(), removed.ToList(), callbackPath);
+        var patchManifestPath = Path.Combine(_downloader.TempDirPath, "patch_manifest.json");
+        await File.WriteAllTextAsync(patchManifestPath, JsonSerializer.Serialize(patchManifest));
+
+        // TODO Remember patch manifest in local manifest
+
+        // Start Patcher
+        _patcherStarter.StartPatcher(patchManifestPath);
+
+        return true;
     }
 
     /// <summary>

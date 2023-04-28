@@ -4,6 +4,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="DemoApp.MainWindow"
-        Title="DemoApp">
-    Welcome to Avalonia!
+        Title="DemoApp"
+        Background="Azure">
+    <!--<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="200">
+        This is a different app version!
+    </TextBlock>-->
+    <Button HorizontalAlignment="Center" VerticalAlignment="Center" Click="Button_OnClick" FontSize="200">
+        Update!!!
+    </Button>
 </Window>
