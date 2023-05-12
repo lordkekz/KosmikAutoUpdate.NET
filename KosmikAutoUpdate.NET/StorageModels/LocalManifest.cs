@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace KosmikAutoUpdate.NET.StorageModels;
 
-internal class LocalManifest {
+public class LocalManifest {
     [JsonConstructor]
     public LocalManifest(GitSemanticVersion version, string channel,
         GitSemanticVersion? patchTargetVersion, string? patchManifestPath) {
@@ -26,7 +26,7 @@ internal class LocalManifest {
     public string? PatchManifestPath { get; set; }
 
     [property: JsonIgnore]
-    public Dictionary<string, LocalAppFile> Files { get; private set; } = new();
+    internal Dictionary<string, LocalAppFile> Files { get; private set; } = new();
 
     internal void PopulateFromLocalFiles(string path) {
         foreach (var file in Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories)) {

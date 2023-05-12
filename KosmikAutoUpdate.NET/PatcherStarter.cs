@@ -9,7 +9,6 @@ public class PatcherStarter {
 
     public void StartPatcher(string patchManifestPath) {
         var startInfo =  new ProcessStartInfo(_patcherExecutable);
-        startInfo.ArgumentList.Add(patchManifestPath);
         Process.Start(startInfo);
     }
 }
