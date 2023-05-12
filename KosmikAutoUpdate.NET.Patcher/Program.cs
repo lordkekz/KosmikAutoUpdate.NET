@@ -45,7 +45,7 @@ public class Program {
         for (var i = 0; i < patchManifest.UpdatedFiles.Count; i++) {
             var file = patchManifest.UpdatedFiles[i];
             var absPath = Path.Combine(absAppPath, file.RelativePath);
-            Console.Write($"Updating file {i + 1} of {patchManifest.UpdatedFiles.Count}; relative Path '{file}'");
+            Console.Write($"Updating file {i + 1} of {patchManifest.UpdatedFiles.Count}; relative Path '{file.RelativePath}'");
             File.Copy(file.TempPath.AbsolutePath, absPath, true);
             Console.WriteLine("    DONE");
         }

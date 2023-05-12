@@ -5,9 +5,12 @@ namespace KosmikAutoUpdate.NET.StorageModels;
 
 internal class LocalManifest {
     [JsonConstructor]
-    public LocalManifest(GitSemanticVersion version, string channel) {
+    public LocalManifest(GitSemanticVersion version, string channel,
+        GitSemanticVersion? patchTargetVersion, string? patchManifestPath) {
         Version = version;
         Channel = channel;
+        PatchTargetVersion = patchTargetVersion;
+        PatchManifestPath = patchManifestPath;
     }
 
     [property: JsonPropertyName("version")]
@@ -15,6 +18,12 @@ internal class LocalManifest {
 
     [property: JsonPropertyName("channel")]
     public string Channel { get; set; }
+
+    [property: JsonPropertyName("patch_target_version")]
+    public GitSemanticVersion? PatchTargetVersion { get; set; }
+
+    [property: JsonPropertyName("patch_manifest_path")]
+    public string? PatchManifestPath { get; set; }
 
     [property: JsonIgnore]
     public Dictionary<string, LocalAppFile> Files { get; private set; } = new();

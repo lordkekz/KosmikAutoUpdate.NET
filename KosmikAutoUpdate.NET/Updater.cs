@@ -11,6 +11,7 @@ public class Updater {
     public GitSemanticVersion CurrentVersion => LocalManifest.Version;
     public string Channel => LocalManifest.Channel;
     public string AppPath { get; private set; }
+    public string KosmikPath => Path.Join(AppPath, "kosmikupdate.json");
 
     internal LocalManifest LocalManifest { get; private init; }
 
@@ -31,35 +32,50 @@ public class Updater {
     /// </summary>
     /// <returns><c>true</c> if the app needs to restart to apply an update; <c>false</c> otherwise</returns>
     public async Task<bool> Update() {
-        // TODO remove temp dir after an update
-        
+        // Remove temp dir after an update
+        if (LocalManifest.PatchTargetVersion is { } patchVersion) {
+            Debug.WriteLine($"App was just patched to version {patchVersion}.");
+            if (!LocalManifest.Version.Equals(patchVersion))
+                Debug.WriteLine($"Version mismatch: Manifest says app was patched to {
+                    patchVersion
+                } but app is actually {
+                    CurrentVersion
+                }.");
+            Directory.Delete(Path.GetDirectoryName(LocalManifest.PatchManifestPath)!, true);
+            LocalManifest.PatchTargetVersion = null;
+            LocalManifest.PatchManifestPath = null;
+            await File.WriteAllTextAsync(KosmikPath, JsonSerializer.Serialize(LocalManifest));
+            Debug.WriteLine("Temp Dir deleted.");
+        }
+
         // Get latest version
-        var version = await _client.GetVersion(Channel ?? "main");
-        Debug.Assert(version is not null);
+        var remoteManifest = await _client.GetVersion(Channel ?? "main");
+        Debug.Assert(remoteManifest is not null);
 
         // Hash local files
         PopulateManifest();
 
         // Update decision and analysis logic (stub)
-        var updateAvailable = CurrentVersion.CompareTo(version.Version) < 0;
+        var targetVersion = remoteManifest.Version;
+        var updateAvailable = CurrentVersion.CompareTo(targetVersion) < 0;
 
         Debug.WriteLine($"Current version is {
             CurrentVersion
         }; Latest version is {
-            version.Version
+            targetVersion
         }; Update available? {
             updateAvailable
         }");
         if (!updateAvailable) return false;
 
-        var filesToUpdate = FindUpdatedFiles(version).ToList();
+        var filesToUpdate = FindUpdatedFiles(remoteManifest).ToList();
         Debug.WriteLine($"Need to download {
             filesToUpdate.Count
         } files with total download size ~{
             filesToUpdate.Sum(f => f.CompressedBytes) / 1000000
         }MB");
 
-        var filesToRemove = FindRemovedFiles(version).ToList();
+        var filesToRemove = FindRemovedFiles(remoteManifest).ToList();
         Debug.WriteLine($"Need to delete {
             filesToRemove.Count
         } files with total local size ~{
@@ -81,7 +97,10 @@ public class Updater {
         var patchManifestPath = Path.Combine(_downloader.TempDirPath, "patch_manifest.json");
         await File.WriteAllTextAsync(patchManifestPath, JsonSerializer.Serialize(patchManifest));
 
-        // TODO Remember patch manifest in local manifest
+        // Remember patch manifest in local manifest
+        LocalManifest.PatchManifestPath = patchManifestPath;
+        LocalManifest.PatchTargetVersion = targetVersion;
+        await File.WriteAllTextAsync(KosmikPath, JsonSerializer.Serialize(LocalManifest));
 
         // Start Patcher
         _patcherStarter.StartPatcher(patchManifestPath);
